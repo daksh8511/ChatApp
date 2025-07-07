@@ -33,9 +33,9 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 
-app.use(express.static(path.join(__dirname, '/client/dist')));
-app.get("*", (req, res) =>{
-  res.sendFile(path.join(__dirname, '/client', 'dist', 'index.html'))
+app.use(express.static(path.join(__dirname, '../client/dist')));
+app.get("/*", (req, res) =>{
+  res.sendFile(path.join(__dirname, '../client', 'dist', 'index.html'))
 })
 
 
