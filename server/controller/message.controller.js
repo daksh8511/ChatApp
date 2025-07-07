@@ -29,43 +29,42 @@ export const getMessage = async (req, res) => {
       ],
     });
 
-    return res.status(200).json({message})
+    return res.status(200).json({ message });
   } catch (error) {
-    return res.status(400).json("error" , error.message)
+    return res.status(400).json("error", error.message);
   }
 };
 
 export const sendMessage = async (req, res) => {
-    try {
-        const {text,image} = req.body;
-        const {id} = req.params
-        const senderId = req.user._id
+  try {
+    const { text, image } = req.body;
+    const { id } = req.params;
+    const senderId = req.user._id;
 
-        let imageurl;
+    let imageurl;
 
-        if(image){
-            const uploadResponse = await cloudinary.uploader.upload(image)
-            imageurl = uploadResponse.secure_url;
-        }
-        
-        const newMessaage = new MessageModel({
-            senerdId : senderId,
-            receiverId : id,
-            text,
-            image : imageurl
-        })
-
-        await newMessaage.save()
-
-        const reciverSocketId = getReceiverSocketId(id)
-
-        if(reciverSocketId){
-          io.to(reciverSocketId).emit("NewMessage", newMessaage)
-        }
-
-        res.status(200).json(newMessaage)
-
-    } catch (error) {
-        return res.status(400).json({"error": error.message})
+    if (image) {
+      const uploadResponse = await cloudinary.uploader.upload(image);
+      imageurl = uploadResponse.secure_url;
     }
-}
+
+    const newMessaage = new MessageModel({
+      senerdId: senderId,
+      receiverId: id,
+      text,
+      image: imageurl,
+    });
+
+    await newMessaage.save();
+
+    const reciverSocketId = getReceiverSocketId(id);
+
+    if (reciverSocketId) {
+      io.to(reciverSocketId).emit("NewMessage", newMessaage);
+    }
+
+    res.status(200).json(newMessaage);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
